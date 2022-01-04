@@ -336,8 +336,10 @@ void cd_comm(t_list *lst)
         i++;
     if (i != 2)
     {
+        free_str(cd);
         write(2, "error: cd: bad arguments", ft_strlen("error: cd bad argument"));
         write(2, "\n", 1);
+        return ;
     }
     i = chdir(cd[1]);
     if (i == -1)
