@@ -24,6 +24,12 @@ int ft_strlen(char const *str)
 	return (i);
 }
 
+void    error_fatal()
+{
+    write(2, "error: fatal", ft_strlen("error: fatal"));
+    write(2, "\n", 1);
+    exit(EXIT_FAILURE);
+}
 
 char *ft_strdup_ns(char const *str)
 {
@@ -31,7 +37,7 @@ char *ft_strdup_ns(char const *str)
 	int		i;
 
 	if (!(copy = (char*)malloc(sizeof(*copy) * (ft_strlen(str) + 2))))
-		return (NULL);
+		error_fatal();
 	i = 0;
 	while (str[i])
 	{
@@ -48,7 +54,7 @@ char *ft_strdup(char const *str)
 	int		i;
 
 	if (!(copy = (char*)malloc(sizeof(*copy) * (ft_strlen(str) + 2))))
-		return (NULL);
+		error_fatal();
 	i = 0;
 	while (str[i])
 	{
@@ -67,6 +73,8 @@ char *ft_strcat(char *s1, char *s2)
     char *new;
 
     new = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 2));
+    if (!new)
+        error_fatal();
     while(s1[i])
     {
         new[i] = s1[i];
@@ -98,7 +106,11 @@ char **ft_split_cmd(char **argv)
         exit(0);
     }    
     cmd = malloc(sizeof(char *) * 1000);
+    if (!cmd)
+        error_fatal();
     cmd[count] = ft_strdup(argv[i]);
+    if (!cmd[count])
+        error_fatal();
     i++;
     while (argv[i])
     {
@@ -137,7 +149,11 @@ char **ft_split(char *str, char c)
     int i = 0;
 
     cmd = malloc(sizeof(char *) * 1000);
+    if (!cmd)
+        error_fatal();
     cmd[count] = malloc(sizeof(char) * 2000);
+    if (!cmd[count])
+        error_fatal();
     while (str[i])
     {
         if (str[i] == c)
@@ -146,6 +162,8 @@ char **ft_split(char *str, char c)
             count++;
             the_cmd = 0;
             cmd[count] = malloc(sizeof(char) * 2000);
+            if (!cmd[count])
+                error_fatal();
             i++;
             while (str[i] == 32)
                 i++;
@@ -190,7 +208,7 @@ t_list  *ft_lstnew(char *cmd, int nb)
 
     lst = malloc(sizeof(t_list));
     if (!lst)
-        exit(1);
+        error_fatal();
     lst->current_cmd = nb;
     lst->pipe = ft_strchr(cmd, '|');
     if (lst->pipe == 0)
@@ -275,10 +293,10 @@ void	pipex_all(char **cmd, char **env, int i)
 	int		status;
 
 	if (pipe(pipefd) == -1)
-		exit(EXIT_FAILURE);
+		error_fatal();
 	pid1 = fork();
 	if (pid1 == -1)
-		exit(EXIT_FAILURE);
+		error_fatal();
 	if (pid1)
 	{
 		close(pipefd[1]);
